@@ -14,12 +14,14 @@ terraform {
 }
 
 provider "google" {
+  # Use Application Default Credentials - avoids JSON parsing issues
   project = var.project_id
   region  = var.region
   zone    = var.zone
 }
 
 provider "google-beta" {
+  # Use Application Default Credentials - avoids JSON parsing issues
   project = var.project_id
   region  = var.region
   zone    = var.zone
