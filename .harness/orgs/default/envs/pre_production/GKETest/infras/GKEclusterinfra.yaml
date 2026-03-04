@@ -1,0 +1,13 @@
+infrastructureDefinition:
+  name: GKE-cluster-infra
+  identifier: GKEclusterinfra
+  orgIdentifier: default
+  environmentRef: GKETest
+  deploymentType: Kubernetes
+  type: KubernetesGcp
+  spec:
+    connectorRef: org.GCPSAConnector
+    cluster: us-central1-a/cluster-1
+    namespace: default
+    releaseName: release-<+service.name>
+  allowSimultaneousDeployments: false
