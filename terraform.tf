@@ -14,14 +14,12 @@ terraform {
 }
 
 provider "google" {
-  # Use access token instead of credentials file to avoid parsing issues
   project = var.project_id
   region  = var.region
   zone    = var.zone
 }
 
 provider "google-beta" {
-  # Use access token instead of credentials file to avoid parsing issues
   project = var.project_id
   region  = var.region
   zone    = var.zone

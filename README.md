@@ -270,7 +270,194 @@ terraform plan -detailed-exitcode
 kubectl get events --sort-by=.metadata.creationTimestamp
 ```
 
-## 🔗 Additional Resources
+## � Version Control with GitHub
+
+### Push Code to Private Repository
+
+**Important:** Before committing, ensure sensitive files are excluded by the `.gitignore`:
+
+```powershell
+# Step 1: Verify safe files only (sensitive files should NOT appear)
+git status --ignored
+
+# Step 2: Initialize git repository (if needed)
+git init
+
+# Step 3: Add safe files
+git add .
+
+# Step 4: Check what's being committed (NO .tfvars or .json files!)
+git status
+
+# Step 5: Commit your code
+git commit -m "Initial commit: Terraform GKE cluster configuration"
+
+# Step 6: Create GitHub repository
+# Manual step: Go to https://github.com/new and create a PRIVATE repository named 'terraform-gke'
+
+# Step 7: Connect to GitHub (replace YOUR-USERNAME)
+git remote add origin https://github.com/YOUR-USERNAME/terraform-gke.git
+
+# Step 8: Push to GitHub
+git branch -M main
+git push -u origin main
+```
+
+**Security Note:** Your `.gitignore` protects these sensitive files:
+- `*.tfvars` (contains project details)
+- `*.json` (service account keys)  
+- `*.tfstate*` (terraform state with secrets)
+
+## 🚀 Deploy Applications to Your Cluster
+
+### Deploy Sample Hello World Application
+
+```powershell
+# Deploy Google's sample hello world application
+kubectl create deployment hello-world --image=gcr.io/google-samples/hello-app:1.0
+
+# Check deployment status
+kubectl get pods
+kubectl get deployment hello-world
+
+# Expose the deployment to the internet
+kubectl expose deployment hello-world --type=LoadBalancer --port 8080 --target-port 8080
+
+# Wait for external IP (takes 2-3 minutes)
+kubectl get services hello-world --watch
+# Press Ctrl+C when you see an external IP assigned
+
+# Test your application
+# Copy the EXTERNAL-IP and open: http://EXTERNAL-IP:8080
+kubectl get services hello-world
+```
+
+### Deploy Custom Applications
+
+#### Prerequisites
+- Docker Desktop installed
+- Your application code in a folder
+- Google Cloud SDK configured
+
+#### Step 1: Create Dockerfile
+
+**For Node.js app:**
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+**For Python app:**
+```dockerfile
+FROM python:3.9-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+EXPOSE 8000
+CMD ["python", "app.py"]
+```
+
+**For .NET app:**
+```dockerfile
+FROM mcr.microsoft.com/dotnet/runtime:6.0
+WORKDIR /app
+COPY bin/Release/net6.0/publish/ .
+EXPOSE 80
+ENTRYPOINT ["dotnet", "YourApp.dll"]
+```
+
+#### Step 2: Build and Deploy
+
+```powershell
+# Navigate to your app folder
+cd C:\path\to\your\app
+
+# Build the Docker image
+docker build -t my-app:latest .
+
+# Test locally (optional)
+docker run -p 8080:3000 my-app:latest
+# Open http://localhost:8080 to test, then Ctrl+C to stop
+
+# Tag for Google Container Registry
+docker tag my-app:latest gcr.io/YOUR-PROJECT-ID/my-app:latest
+
+# Configure Docker credentials
+gcloud auth configure-docker
+
+# Push to registry
+docker push gcr.io/YOUR-PROJECT-ID/my-app:latest
+
+# Deploy to Kubernetes
+kubectl create deployment my-app --image=gcr.io/YOUR-PROJECT-ID/my-app:latest
+
+# Expose as service
+kubectl expose deployment my-app --type=LoadBalancer --port=80 --target-port=3000
+
+# Get external IP
+kubectl get services my-app
+```
+
+#### Step 3: Update Your Application
+
+```powershell
+# Make code changes, then build new version
+docker build -t gcr.io/YOUR-PROJECT-ID/my-app:v2 .
+docker push gcr.io/YOUR-PROJECT-ID/my-app:v2
+
+# Update deployment
+kubectl set image deployment/my-app my-app=gcr.io/YOUR-PROJECT-ID/my-app:v2
+```
+
+#### Optional: Use YAML Manifests
+
+Create `deployment.yaml`:
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        image: gcr.io/YOUR-PROJECT-ID/my-app:latest
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: my-app
+```
+
+Apply with:
+```powershell
+kubectl apply -f deployment.yaml
+```
+
+## �🔗 Additional Resources
 
 - [GKE Documentation](https://cloud.google.com/kubernetes-engine/docs)
 - [Terraform GCP Provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs)
