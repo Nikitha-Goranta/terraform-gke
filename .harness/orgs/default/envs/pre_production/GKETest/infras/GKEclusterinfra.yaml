@@ -7,7 +7,7 @@ infrastructureDefinition:
   type: KubernetesGcp
   spec:
     connectorRef: org.GCPSAConnector
-    cluster: us-central1-a/cluster-1
+    cluster: <pipeline.stages.Provision_GKE.spec.execution.steps.TF_Apply.output.otputVariables.cluster_name>
     namespace: default
     releaseName: release-<+service.name>
   allowSimultaneousDeployments: false
