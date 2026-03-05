@@ -1,0 +1,28 @@
+# Kubernetes specific ignores
+*.tmp
+*.temp
+kubeconfig*
+*-secret.yaml.bak
+*-override.yaml
+
+# Kustomize build output
+kustomization-build/
+
+# Helm charts (if added later)
+charts/
+Chart.lock
+
+# Environment specific overrides (add these later if needed)
+# overlays/dev/
+# overlays/staging/
+# overlays/prod/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,67 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ingress
+  namespace: my-app
+  labels:
+    app: my-app
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "my-app-ip"
+    networking.gke.io/managed-certificates: "my-app-ssl-cert"
+    kubernetes.io/ingress.allow-http: "true"
+    # Enable Cloud CDN
+    cloud.google.com/cdn-enabled: "true"
+    # Backend configuration for health checks
+    cloud.google.com/backend-config: '{"default": "my-app-backend-config"}'
+spec:
+  rules:
+  - host: my-app.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-app-service
+            port:
+              number: 80
+  - host: api.my-app.example.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: my-app-service
+            port:
+              number: 80
+---
+# Managed SSL Certificate for HTTPS
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: my-app-ssl-cert
+  namespace: my-app
+spec:
+  domains:
+    - my-app.example.com
+    - api.my-app.example.com
+---
+# Backend configuration for health checks
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: my-app-backend-config
+  namespace: my-app
+spec:
+  healthCheck:
+    checkIntervalSec: 10
+    timeoutSec: 5
+    healthyThreshold: 1
+    unhealthyThreshold: 3
+    type: HTTP
+    requestPath: /health
+    port: 8080
+  connectionDraining:
+    drainingTimeoutSec: 60

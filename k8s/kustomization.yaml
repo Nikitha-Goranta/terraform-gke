@@ -1,0 +1,48 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: my-app
+
+resources:
+- namespace.yaml
+- deployment.yaml
+- service.yaml
+- configmap.yaml
+- secret.yaml
+- ingress.yaml
+- hpa.yaml
+
+# Common labels applied to all resources
+commonLabels:
+  team: platform
+  project: gke-app
+  managed-by: kubectl
+
+# Images to be used (can be overridden per environment)
+images:
+- name: gcr.io/project-5369f38e-731c-4f19-af2/backend-api
+  newTag: v1.2.3
+
+# ConfigMap generator for environment-specific configs
+configMapGenerator:
+- name: my-app-env-config
+  literals:
+  - ENVIRONMENT=dev
+  - GKE_CLUSTER_NAME=my-gke-cluster
+  - GCP_PROJECT_ID=project-5369f38e-731c-4f19-af2
+
+# Patches for environment-specific modifications
+patchesStrategicMerge:
+- |- 
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: my-app
+  spec:
+    template:
+      spec:
+        containers:
+        - name: my-app
+          envFrom:
+          - configMapRef:
+              name: my-app-env-config
