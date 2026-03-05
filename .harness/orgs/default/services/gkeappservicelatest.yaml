@@ -1,12 +1,12 @@
 service:
-  name: gke-app-service
-  identifier: GKEappservice
+  name: gke-app-service-latest
+  identifier: gkeappservicelatest
   orgIdentifier: default
   serviceDefinition:
     spec:
       manifests:
         - manifest:
-            identifier: k8smanifests
+            identifier: gkemanifestidentifierlatest
             type: K8sManifest
             spec:
               store:
@@ -15,7 +15,7 @@ service:
                   connectorRef: org.TerraformGKEConnector
                   gitFetchType: Branch
                   paths:
-                    - k8s/
+                    - /k8s
                   branch: main
               skipResourceVersioning: false
               enableDeclarativeRollback: false
