@@ -20,7 +20,7 @@ node_machine_type = "e2-medium"
 node_disk_size    = 20
 
 # Environment Configuration
-environment = "Test"
+environment = "dev"
 
 # Labels
 labels = {
