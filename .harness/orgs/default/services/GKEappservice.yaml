@@ -1,5 +1,5 @@
 service:
-  name: GKE-app-service
+  name: gke-app-service
   identifier: GKEappservice
   orgIdentifier: default
   serviceDefinition:
