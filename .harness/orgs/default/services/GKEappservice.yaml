@@ -2,3 +2,21 @@ service:
   name: GKE-app-service
   identifier: GKEappservice
   orgIdentifier: default
+  serviceDefinition:
+    spec:
+      manifests:
+        - manifest:
+            identifier: k8smanifests
+            type: K8sManifest
+            spec:
+              store:
+                type: Github
+                spec:
+                  connectorRef: org.TerraformGKEConnector
+                  gitFetchType: Branch
+                  paths:
+                    - k8s/
+                  branch: main
+              skipResourceVersioning: false
+              enableDeclarativeRollback: false
+    type: Kubernetes
