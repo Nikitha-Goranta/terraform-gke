@@ -61,7 +61,7 @@ spec:
     healthyThreshold: 1
     unhealthyThreshold: 3
     type: HTTP
-    requestPath: /health
-    port: 8080
+    requestPath: /
+    port: 80
   connectionDraining:
     drainingTimeoutSec: 60
