@@ -7,24 +7,30 @@ data "google_compute_zones" "available" {
 module "vpc" {
   source = "./modules/vpc"
   
-  project_id     = var.project_id
-  region         = var.region
-  network_name   = var.network_name
-  subnet_name    = var.subnet_name
-  subnet_cidr    = var.subnet_cidr
-  pods_cidr      = var.pods_cidr
-  services_cidr  = var.services_cidr
-  environment    = var.environment
-  labels         = var.labels
+  project_id           = var.project_id
+  region               = var.region
+  network_name         = var.network_name
+  subnet_name          = var.subnet_name
+  subnet_cidr          = var.subnet_cidr
+  pods_cidr            = var.pods_cidr
+  services_cidr        = var.services_cidr
+  environment          = var.environment
+  labels               = var.labels
+  create_vpc           = false
+  existing_network_name = "vpc-hr-test"
+  create_subnet        = true
 }
 
 # IAM Module
 module "iam" {
   source = "./modules/iam"
   
-  project_id   = var.project_id
-  environment  = var.environment
-  labels       = var.labels
+  project_id                       = var.project_id
+  environment                      = var.environment
+  labels                           = var.labels
+  create_service_accounts          = false
+  existing_gke_service_account     = "gke-cluster-sa-dev"
+  existing_gke_node_service_account = "gke-node-sa-dev"
 }
 
 # GKE Module
