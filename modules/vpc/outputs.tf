@@ -10,12 +10,12 @@ output "network_self_link" {
 
 output "subnet_name" {
   description = "The name of the subnet"
-  value       = var.create_subnet ? google_compute_subnetwork.subnet[0].name : data.google_compute_subnetwork.existing_subnet[0].name
+  value       = data.google_compute_subnetwork.existing_subnet.name
 }
 
 output "subnet_self_link" {
   description = "The self link of the subnet"
-  value       = var.create_subnet ? google_compute_subnetwork.subnet[0].self_link : data.google_compute_subnetwork.existing_subnet[0].self_link
+  value       = data.google_compute_subnetwork.existing_subnet.self_link
 }
 
 output "pods_secondary_range_name" {
@@ -30,7 +30,7 @@ output "services_secondary_range_name" {
 
 output "subnet_cidr" {
   description = "The CIDR block of the subnet"
-  value       = var.create_subnet ? google_compute_subnetwork.subnet[0].ip_cidr_range : data.google_compute_subnetwork.existing_subnet[0].ip_cidr_range
+  value       = data.google_compute_subnetwork.existing_subnet.ip_cidr_range
 }
 
 output "router_name" {

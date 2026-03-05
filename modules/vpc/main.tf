@@ -13,17 +13,16 @@ resource "google_compute_network" "vpc" {
   routing_mode           = "GLOBAL"
 }
 
-# Data source for existing subnet (only if using existing subnet)
+# Data source for existing subnet
 data "google_compute_subnetwork" "existing_subnet" {
-  count   = var.create_subnet ? 0 : 1
   project = var.project_id
-  name    = var.existing_subnet_name
+  name    = var.subnet_name
   region  = var.region
 }
 
-# Subnet with secondary ranges for pods and services (create new subnet in existing VPC)
+# Subnet resource (disabled - using existing subnet)
 resource "google_compute_subnetwork" "subnet" {
-  count         = var.create_subnet ? 1 : 0
+  count         = 0  # Always use existing subnet
   name          = var.subnet_name
   ip_cidr_range = var.subnet_cidr
   network       = data.google_compute_network.existing_vpc[0].name
@@ -43,11 +42,11 @@ resource "google_compute_subnetwork" "subnet" {
   private_ip_google_access = true
 }
 
-# Firewall rule to allow internal communication
+# Firewall rule to allow internal communication (only create if create_firewall_rules is true)
 resource "google_compute_firewall" "allow_internal" {
-  count   = var.create_vpc ? 1 : 0
+  count   = var.create_firewall_rules ? 1 : 0
   name    = "${var.network_name}-allow-internal"
-  network = google_compute_network.vpc[0].name
+  network = data.google_compute_network.existing_vpc[0].name
   
   allow {
     protocol = "tcp"
@@ -74,9 +73,9 @@ resource "google_compute_firewall" "allow_internal" {
 
 # Firewall rule to allow SSH (optional)
 resource "google_compute_firewall" "allow_ssh" {
-  count   = var.create_vpc ? 1 : 0
+  count   = var.create_firewall_rules ? 1 : 0
   name    = "${var.network_name}-allow-ssh"
-  network = google_compute_network.vpc[0].name
+  network = data.google_compute_network.existing_vpc[0].name
   
   allow {
     protocol = "tcp"
@@ -87,16 +86,16 @@ resource "google_compute_firewall" "allow_ssh" {
   target_tags   = ["allow-ssh"]
 }
 
-# Cloud NAT Router for private nodes (only create if create_vpc is true)
+# Cloud NAT Router for private nodes (only create if create_firewall_rules is true)
 resource "google_compute_router" "router" {
-  count   = var.create_vpc ? 1 : 0
+  count   = var.create_firewall_rules ? 1 : 0
   name    = "${var.network_name}-router"
   region  = var.region
-  network = google_compute_network.vpc[0].id
+  network = data.google_compute_network.existing_vpc[0].id
 }
 
 resource "google_compute_router_nat" "nat" {
-  count                              = var.create_vpc ? 1 : 0
+  count                              = var.create_firewall_rules ? 1 : 0
   name                               = "${var.network_name}-nat"
   router                            = google_compute_router.router[0].name
   region                            = var.region

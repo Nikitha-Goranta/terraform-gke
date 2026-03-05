@@ -39,7 +39,13 @@ variable "existing_subnet_name" {
 variable "create_subnet" {
   description = "Whether to create a new subnet or use existing one"
   type        = bool
-  default     = true
+  default     = false
+}
+
+variable "create_firewall_rules" {
+  description = "Whether to create firewall rules or use existing ones"
+  type        = bool
+  default     = false
 }
 
 variable "subnet_cidr" {
