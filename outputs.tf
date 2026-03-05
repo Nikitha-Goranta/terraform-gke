@@ -26,6 +26,11 @@ output "cluster_name" {
   value       = module.gke.cluster_name
 }
 
+output "cluster_id" {
+  description = "The cluster ID in format location/clustername for Harness pipeline"
+  value       = "${module.gke.cluster_location}/${module.gke.cluster_name}"
+}
+
 output "cluster_endpoint" {
   description = "The endpoint of the GKE cluster"
   value       = module.gke.cluster_endpoint
