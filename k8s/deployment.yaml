@@ -62,12 +62,6 @@ spec:
           failureThreshold: 3
         securityContext:
           allowPrivilegeEscalation: false
-          runAsNonRoot: false
-          capabilities:
-            drop:
-            - ALL
-      securityContext:
-        fsGroup: 1000
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
