@@ -48,7 +48,7 @@ spec:
           httpGet:
             path: /
             port: 80
-          initialDelaySeconds: 10
+          initialDelaySeconds: 15
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
@@ -56,19 +56,18 @@ spec:
           httpGet:
             path: /
             port: 80
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 5
           failureThreshold: 3
         securityContext:
           allowPrivilegeEscalation: false
-          runAsNonRoot: true
-          runAsUser: 1000
+          runAsNonRoot: false
           capabilities:
             drop:
             - ALL
       securityContext:
-        fsGroup: 2000
+        fsGroup: 1000
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
