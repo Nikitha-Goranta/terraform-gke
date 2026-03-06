@@ -1,0 +1,4 @@
+service:
+  name: zxcvbn
+  identifier: zxcvbn
+  orgIdentifier: default
