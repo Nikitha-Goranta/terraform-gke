@@ -2,3 +2,21 @@ service:
   name: zxcvbn
   identifier: zxcvbn
   orgIdentifier: default
+  serviceDefinition:
+    spec:
+      manifests:
+        - manifest:
+            identifier: sdfghj
+            type: K8sManifest
+            spec:
+              store:
+                type: Github
+                spec:
+                  connectorRef: org.TerraformGKEConnector
+                  gitFetchType: Branch
+                  paths:
+                    - /k8s
+                  branch: main
+              skipResourceVersioning: false
+              enableDeclarativeRollback: false
+    type: Kubernetes
